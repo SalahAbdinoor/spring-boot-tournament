@@ -23,6 +23,17 @@ public class ExerciseApplication {
         SpringApplication.run(ExerciseApplication.class, args);
     }
 
+    /**
+     * Setting up initial-conditions:
+     *
+     * There are 4 players partaking in 2 tournaments (high reward & mid reward)
+     *
+     *
+     * @param exerciseRepository
+     * @param playerRepository
+     * @param tournamentRepository
+     * @return
+     */
     @Bean
     public CommandLineRunner initialSetup(ExerciseRepository exerciseRepository, PlayerRepository playerRepository, TournamentRepository tournamentRepository) {
 
@@ -40,9 +51,9 @@ public class ExerciseApplication {
             Player player4 = playerRepository.save(new Player("Paron"));
 
             /* Setting up tournaments*/
-            Tournament highReward = tournamentRepository.save(new Tournament(highTournamentName,5000));
-            Tournament midReward = tournamentRepository.save(new Tournament(midTournamentName, 2500));
-            Tournament lowReward = tournamentRepository.save(new Tournament(lowTournamentName, 1000));
+            Tournament highReward = tournamentRepository.save(new Tournament(highTournamentName,5000, "EUR"));
+            Tournament midReward = tournamentRepository.save(new Tournament(midTournamentName, 2500, "EUR"));
+            Tournament lowReward = tournamentRepository.save(new Tournament(lowTournamentName, 1000, "SEK"));
 
             /* Setting up exercises*/
             Exercise player1Exercise = exerciseRepository.save(new Exercise(highReward, player1));

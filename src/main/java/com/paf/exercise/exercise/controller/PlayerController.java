@@ -5,8 +5,6 @@ import com.paf.exercise.exercise.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping(path = "/api/v2/player")
 public class PlayerController {
@@ -14,7 +12,11 @@ public class PlayerController {
     @Autowired
     PlayerRepository playerRepository;
 
-    // TODO: Only for development
+    /**
+     * Get list of players
+     *
+     * @return list of players
+     */
     @GetMapping(path = "/all")
     public @ResponseBody
     Iterable<Player> getPlayers() {
@@ -24,7 +26,7 @@ public class PlayerController {
     /**
      * Find any player based on ID
      *
-     * @param id - id of player
+     * @param id - ID of player
      * @return player - Returns player object
      */
     @GetMapping(path = "/get")
@@ -64,7 +66,8 @@ public class PlayerController {
      */
     @PutMapping(path = "/put")
     public @ResponseBody
-    String putPlayer(@RequestParam Long id, @RequestParam String newName) {
+    String putPlayer(@RequestParam Long id,
+                     @RequestParam String newName) {
 
         // If ID doesn't exist
         if (!playerRepository.existsById(id)) {
@@ -87,8 +90,6 @@ public class PlayerController {
             return "Player name changed: " + oldName + " -> " + newName;
         }
     }
-
-
 
     /**
      * Deletes player based on ID

@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class Exercise {
 
     /* Variables */
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

@@ -14,4 +14,7 @@ public interface TournamentRepository extends CrudRepository<Tournament, Long> {
     List<Tournament> findByRewardAmount(double rewardAmount);
 
     Optional<Tournament> findByName(String name);
+
+    boolean existsByName(String name);
+
 }

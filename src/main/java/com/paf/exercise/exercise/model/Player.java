@@ -1,8 +1,12 @@
 package com.paf.exercise.exercise.model;
 
+import org.springframework.data.jpa.repository.Temporal;
+
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
+@Table(name = "player")
 public class Player {
 
     /* Variables */
@@ -16,7 +20,7 @@ public class Player {
 
     /* Constructors */
     public Player(String name) {
-
+        //super();
         this.name = name;
     }
 

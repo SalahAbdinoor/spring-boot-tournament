@@ -1,50 +1,124 @@
-package com.paf.exercise.exercise.controller;
-
-import com.paf.exercise.exercise.model.Exercise;
-import com.paf.exercise.exercise.model.Player;
-import com.paf.exercise.exercise.model.Tournament;
-import com.paf.exercise.exercise.repository.ExerciseRepository;
-import com.paf.exercise.exercise.repository.PlayerRepository;
-import com.paf.exercise.exercise.repository.TournamentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.List;
-
-@RestController
-@RequestMapping(path = "/api/v2/exercise")
-public class ExerciseController {
-
-    @Autowired
-    ExerciseRepository exerciseRepository;
-
-    @Autowired
-    TournamentRepository tournamentRepository;
-
-    @Autowired
-    PlayerRepository playerRepository;
-
-
-    @GetMapping(path = "/test")
-    public Iterable<Object> test() {
-
-        var salah = new Player("Salah");
-/*
-        playerRepository.save(salah);
-
-        playerRepository.save(new Player("Pedram"));
-        playerRepository.save(new Player("Mooohammad"));
-
-        var id = tournamentRepository.save(new Tournament(2500)).getId();
-
-        tournamentRepository.save(new Tournament(5000));
-
-
- */
-        return List.of(new String[]{"List of players: " + playerRepository.findAll(),"List of Tournaments: " + tournamentRepository.findAll(),"List of exercises: " + exerciseRepository.findAll()});
-
-    }
-}
+//package com.paf.exercise.exercise.controller;
+//
+//import com.paf.exercise.exercise.model.Exercise;
+//import com.paf.exercise.exercise.model.Tournament;
+//import com.paf.exercise.exercise.repository.ExerciseRepository;
+//import com.paf.exercise.exercise.repository.PlayerRepository;
+//import com.paf.exercise.exercise.repository.TournamentRepository;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.web.bind.annotation.*;
+//
+//@RestController
+//@RequestMapping(path = "/api/v2/tournament")
+//public class ExerciseController {
+//
+//    @Autowired
+//    PlayerRepository playerRepository;
+//    @Autowired
+//    TournamentRepository tournamentRepository;
+//    @Autowired
+//    ExerciseRepository exerciseRepository;
+//
+//    // TODO: Only for development
+//    @GetMapping(path = "/all")
+//    public @ResponseBody
+//    Iterable<Exercise> getTournaments() {
+//
+//        return exerciseRepository.findAll();
+//    }
+////
+//    /**
+//     * Find any exercise based on ID
+//     *
+//     * @param id - id of tournament
+//     * @return tournament - Returns tournament object
+//     */
+//    @GetMapping(path = "/get")
+//    public @ResponseBody
+//    Tournament getTournament(@RequestParam long id) {
+//
+//        return tournamentRepository.findById(id).get();
+//    }
+//
+//    /**
+//     * Add new tournament
+//     *
+//     * @param name         - Name of tournament
+//     * @param rewardAmount - reward amount
+//     * @return tournament - Returns tournament object
+//     */
+//    @PostMapping(path = "/add")
+//    public @ResponseBody
+//    String addTournament(@RequestParam String name, @RequestParam double rewardAmount, @RequestParam String currency) {
+//
+//        // If tournament already exist
+//        if (tournamentRepository.existsByName(name)) {
+//            return "tournament already exists";
+//
+//        } else {
+//            Tournament tournament = new Tournament(name, rewardAmount, currency);
+//            tournamentRepository.save(tournament);
+//
+//            return "New tournament added: " + tournament;
+//        }
+//    }
+//
+//    /**
+//     * Update/edit the name & reward-amount of existing tournament
+//     *
+//     * @param newName         - New name of tournament
+//     * @param newRewardAmount - New amount for reward
+//     * @return player - Returns player object
+//     */
+//    @PutMapping(path = "/update")
+//    public @ResponseBody
+//    String updateTournament(@RequestParam Long id, @RequestParam String newName, @RequestParam double newRewardAmount) {
+//
+//        // If ID doesn't exist
+//        if (!tournamentRepository.existsById(id)) {
+//            return "There is no tournament with ID: " + id;
+//
+//            // If tournament-name is taken
+//        } else if (tournamentRepository.existsByName(newName)) {
+//            return "Tournament already exists";
+//
+//        } else {
+//            // Get tournament
+//            Tournament tournament = tournamentRepository.findById(id).get();
+//            String oldName = tournament.getName();
+//            double oldRewardAmount = tournament.getRewardAmount();
+//
+//            // set new name & reward-amount and save to repository
+//            tournament.setName(newName);
+//            tournament.setRewardAmount(newRewardAmount);
+//            tournamentRepository.save(tournament);
+//
+//            // Successful change
+//            return "Tournament name changed: \n" + oldName + " -> " + newName
+//                    + "\n" + oldRewardAmount + " -> " + newRewardAmount;
+//        }
+//    }
+//
+//    /**
+//     * Deletes tournament based on ID
+//     *
+//     * @param id - ID of tournament that is getting deleted
+//     * @return - how operation went
+//     */
+//    @DeleteMapping(path = "/delete")
+//    public @ResponseBody
+//    String deleteTournament(@RequestParam Long id) {
+//
+//        if (!tournamentRepository.existsById(id)) {
+//            return "There is no tournament with ID: " + id;
+//
+//        } else {
+//            Tournament tournament = tournamentRepository.findById(id).get();
+//
+//            tournamentRepository.delete(tournament);
+//
+//            return "Tournament: " + tournament.getName() + " has been deleted";
+//        }
+//    }
+//
+//}

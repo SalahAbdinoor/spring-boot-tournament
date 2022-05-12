@@ -3,12 +3,8 @@ package com.paf.exercise.exercise.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "tournament")
 public class Tournament {
-
-    // Currently, allowed currencies as rewards
-    public enum currencies {
-        EUR,
-    }
 
     /* Variables */
 
@@ -23,12 +19,19 @@ public class Tournament {
     @Column(name = "reward_amount", nullable = false)
     private double rewardAmount;
 
-    /* Constructors */
+    @Column(name = "currency", nullable = false)
+    private String currency;
 
-    public Tournament(String name, double rewardAmount) {
+    public Tournament(String name, double rewardAmount, String currency) {
         this.name = name;
         this.rewardAmount = rewardAmount;
+        this.currency = currency;
     }
+
+    // Currently, allowed currencies as rewards
+    public enum currencies { EUR, }
+
+    /* Constructors */
 
     public Tournament() {
     }
