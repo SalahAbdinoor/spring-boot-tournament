@@ -1,6 +1,7 @@
 package com.paf.exercise.exercise.controller;
 
 import com.paf.exercise.exercise.model.Player;
+import com.paf.exercise.exercise.repository.ExerciseRepository;
 import com.paf.exercise.exercise.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,10 @@ public class PlayerController {
     @Autowired
     PlayerRepository playerRepository;
 
+    @Autowired
+    ExerciseRepository exerciseRepository;
+
     /**
-     * Get list of players
-     *
      * @return list of players
      */
     @GetMapping(path = "/all")
@@ -24,33 +26,41 @@ public class PlayerController {
     }
 
     /**
-     * Find any player based on ID
+     * Get player by ID.
      *
-     * @param id - ID of player
-     * @return player - Returns player object
+     * @param id ID of player
+     * @return Success || Error
      */
-    @GetMapping(path = "/get")
+    @GetMapping(path = "/get/{id}")
     public @ResponseBody
-    Player getPlayer(@RequestParam long id) {
+    String getPlayer(@PathVariable Long id) {
 
-        return playerRepository.findById(id).get();
+        if (!playerRepository.existsById(id))
+            return "There is no player with ID: " + id;
+        else
+            return playerRepository.findById(id).get().toString();
     }
 
     /**
-     * Add new player if player-name isn't already taken.
+     * Add new player.
      *
-     * @param name - Name of player
-     * @return player - Returns player object
+     * @param name Name of player
+     * @return Success || Error
      */
     @PostMapping(path = "/add")
     public @ResponseBody
     String addPlayer(@RequestParam String name) {
 
         // If player already exist
-        if (playerRepository.existsByName(name)) {
+        if (playerRepository.existsByName(name))
             return "Player already exists";
 
-        } else {
+            // If player name is fewer than 4 characters
+        else if (name.length() < 4)
+            return "name must longer than 4 characters";
+
+            // Successful creation of new player
+        else {
             Player player = new Player(name);
             playerRepository.save(player);
 
@@ -59,57 +69,69 @@ public class PlayerController {
     }
 
     /**
-     * Change the name of existing player
+     * Change the name of existing player.
      *
-     * @param newName - New name of player
-     * @return player - Returns player object
+     * @param id      ID of player getting updated
+     * @param newName New name of player
+     * @return Success || Error
      */
-    @PutMapping(path = "/put")
+    @PutMapping(path = "/put/{id}")
     public @ResponseBody
-    String putPlayer(@RequestParam Long id,
+    String putPlayer(@PathVariable Long id,
                      @RequestParam String newName) {
 
-        // If ID doesn't exist
-        if (!playerRepository.existsById(id)) {
+        // If player doesn't exist
+        if (!playerRepository.existsById(id))
             return "There is no player with ID: " + id;
 
             // If player-name is taken
-        } else if (playerRepository.existsByName(newName)) {
-            return "Player already exists";
+        else if (playerRepository.existsByName(newName))
+            return "Name is already in use, please choose a unique name";
 
-        } else {
+            // If name is fewer than 4 characters
+        else if (newName.length() < 4)
+            return "Name must longer than 4 characters";
+
+            // Successful name-change
+        else {
+
             // Get player
             Player player = playerRepository.findById(id).get();
-            var oldName = player.getName();
+            String oldName = player.getName();
 
-            // set new name and save to repository
+            // Set new-name and save to repository
             player.setName(newName);
             playerRepository.save(player);
 
-            // Successful name-change
             return "Player name changed: " + oldName + " -> " + newName;
         }
     }
 
     /**
-     * Deletes player based on ID
+     * Deletes player based on ID.
      *
-     * @param id - ID of player that is getting deleted
-     * @return - how operation went
+     * @param id ID of player that is getting deleted
+     * @return Success || Error
      */
-    @DeleteMapping(path = "/delete")
+    @DeleteMapping(path = "/delete/{id}")
     public @ResponseBody
-    String deletePlayer(@RequestParam Long id) {
+    String deletePlayer(@PathVariable Long id) {
 
-        if (!playerRepository.existsById(id)) {
+        // If player doesn't exist
+        if (!playerRepository.existsById(id))
             return "There is no player with ID: " + id;
 
-        } else {
+        else {
             Player player = playerRepository.findById(id).get();
 
-            playerRepository.delete(player);
+            /* If player is connected to exercise.
+            Deletes connected exercise.
+            TODO: Fix with cascade.ALL in Exercise model. */
+            if (exerciseRepository.existsByPlayer(player))
+                exerciseRepository.delete(exerciseRepository.findByPlayer(player).get());
 
-            return "PLayer: " + player.getName() + " has been deleted";
+            playerRepository.delete(player);
+            return "Player: " + player.getName() + " has been deleted";
         }
     }
 }

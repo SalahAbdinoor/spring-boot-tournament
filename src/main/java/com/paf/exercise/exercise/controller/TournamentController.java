@@ -1,8 +1,7 @@
 package com.paf.exercise.exercise.controller;
 
-import com.paf.exercise.exercise.model.Player;
 import com.paf.exercise.exercise.model.Tournament;
-import com.paf.exercise.exercise.repository.PlayerRepository;
+import com.paf.exercise.exercise.repository.ExerciseRepository;
 import com.paf.exercise.exercise.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,112 +13,154 @@ public class TournamentController {
     @Autowired
     TournamentRepository tournamentRepository;
 
-    // TODO: Only for development
+    @Autowired
+    ExerciseRepository exerciseRepository;
+
+    /**
+     * @return list of tournament
+     */
     @GetMapping(path = "/all")
     public @ResponseBody
     Iterable<Tournament> getTournaments() {
-
         return tournamentRepository.findAll();
     }
 
     /**
-     * Find any tournament based on ID
+     * Get tournament by ID.
      *
-     * @param id - id of tournament
-     * @return tournament - Returns tournament object
+     * @param id ID of tournament
+     * @return Success || Error
      */
-    @GetMapping(path = "/get")
+    @GetMapping(path = "/get/{id}")
     public @ResponseBody
-    Tournament getTournament(@RequestParam long id) {
+    String getTournament(@PathVariable Long id) {
 
-        return tournamentRepository.findById(id).get();
+        if (!tournamentRepository.existsById(id))
+            return "There is no tournament with ID: " + id;
+        else
+            return tournamentRepository.findById(id).get().toString();
     }
 
     /**
-     * Add new tournament
-     * <p>
-     * Checking for:
-     * -- if tournament-name isn't already taken.
-     * -- if tournament-name isn't already taken.
+     * Add new tournament.
      *
-     * TODO: Lägg till enum som läser in turneringen
-     *
-     * @param name         - Name of tournament
-     * @param rewardAmount - reward amount
-     * @return tournament - Returns tournament object
+     * @param name         Name of tournament
+     * @param rewardAmount Reward amount
+     * @param currency     Currency of reward-amount
+     * @return Success || Error
      */
     @PostMapping(path = "/add")
     public @ResponseBody
-    String addTournament(@RequestParam String name, @RequestParam double rewardAmount) {
+    String addTournament(@RequestParam String name,
+                         @RequestParam double rewardAmount,
+                         @RequestParam String currency) {
 
-        // If tournament already exist
-        if (tournamentRepository.existsByName(name)) {
-            return "tournament already exists";
+        try {
+            // If tournament already exist
+            if (tournamentRepository.existsByName(name))
+                return "Tournament name is already in use;\nPlease try another name!";
 
-        } else {
-            Tournament tournament = new Tournament(name, rewardAmount, "E");
-            tournamentRepository.save(tournament);
+                // If parameters don't meet conditions
+            else if (name.length() < 4 || rewardAmount < 0 || currency.length() != 3)
+                return "Name needs to be more than characters" +
+                        "\nReward-amount needs to be more than 0" +
+                        "\nCurrency needs to be 3 characters";
 
-            return "New tournament added: " + tournament;
+                // Successful creation of new player
+            else {
+                Tournament tournament = new Tournament(name, rewardAmount, currency);
+                tournamentRepository.save(tournament);
+
+                return "New tournament added: " + tournament;
+            }
+
+            // If currency doesn't exist in currencies - enum - @Tournament.java
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "something went horribly wrong!";
         }
     }
 
     /**
-     * Update/edit the name & reward-amount of existing tournament
+     * Change the name, reward-amount and/or currency of existing tournament.
      *
-     * @param newName         - New name of tournament
-     * @param newRewardAmount - New amount for reward
-     * @return player - Returns player object
+     * @param id              ID of tournament getting updated
+     * @param newName         New name of tournament
+     * @param newRewardAmount New amount for reward
+     * @param newCurrency     New currency of reward-amount
+     * @return Success || Error
      */
-    @PutMapping(path = "/put")
+    @PutMapping(path = "/put/{id}")
     public @ResponseBody
-    String updateTournament(@RequestParam Long id, @RequestParam String newName, @RequestParam double newRewardAmount) {
+    String updateTournament(@PathVariable Long id,
+                            @RequestParam String newName,
+                            @RequestParam double newRewardAmount,
+                            @RequestParam String newCurrency) {
+        try {
+            // If ID doesn't exist
+            if (!tournamentRepository.existsById(id)) {
+                return "There is no tournament with ID: " + id;
 
-        // If ID doesn't exist
-        if (!tournamentRepository.existsById(id)) {
-            return "There is no tournament with ID: " + id;
+                // If tournament-name is taken
+            } else if (tournamentRepository.existsByName(newName)) {
+                return "Tournament name is already in use;\nPlease try another name!";
 
-            // If tournament-name is taken
-        } else if (tournamentRepository.existsByName(newName)) {
-            return "Tournament already exists";
+            } else {
+                // Get tournament
+                Tournament tournament = tournamentRepository.findById(id).get();
+                String oldName = tournament.getName();
+                double oldRewardAmount = tournament.getRewardAmount();
+                String oldCurrency = tournament.getCurrency();
 
-        } else {
-            // Get tournament
-            Tournament tournament = tournamentRepository.findById(id).get();
-            String oldName = tournament.getName();
-            double oldRewardAmount = tournament.getRewardAmount();
+                // set new name & reward-amount
+                tournament.setName(newName);
+                tournament.setRewardAmount(newRewardAmount);
+                tournament.setCurrency(newCurrency);
 
-            // set new name & reward-amount and save to repository
-            tournament.setName(newName);
-            tournament.setRewardAmount(newRewardAmount);
-            tournamentRepository.save(tournament);
+                tournamentRepository.save(tournament);
 
-            // Successful change
-            return "Tournament name changed: \n" + oldName + " -> " + newName
-                    + "\n" + oldRewardAmount + " -> " + newRewardAmount;
+                // Successful change
+                return "Tournament parameters changed: \n" + oldName + " -> " + newName
+                        + "\n" + oldRewardAmount + " -> " + newRewardAmount
+                        + "\n" + oldCurrency + " -> " + newCurrency;
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "something went horribly wrong!";
         }
     }
 
     /**
-     * Deletes tournament based on ID
+     * Deletes tournament based on ID.
      *
-     * @param id - ID of tournament that is getting deleted
-     * @return - how operation went
+     * @param id ID of tournament that is getting deleted
+     * @return Success || Error
      */
-    @DeleteMapping(path = "/delete")
+    @DeleteMapping(path = "/delete/{id}")
     public @ResponseBody
-    String deleteTournament(@RequestParam Long id) {
+    String deleteTournament(@PathVariable Long id) {
 
-        if (!tournamentRepository.existsById(id)) {
+        if (!tournamentRepository.existsById(id))
             return "There is no tournament with ID: " + id;
 
-        } else {
+        else {
             Tournament tournament = tournamentRepository.findById(id).get();
+
+            // if tournament is connected to exercise.
+            // Deletes connected exercise.
+            // TODO: Fix with cascade.ALL in Exercise model.
+            if (exerciseRepository.existsByTournament(tournament))
+                exerciseRepository.delete(exerciseRepository.findByTournament(tournament).get());
 
             tournamentRepository.delete(tournament);
 
             return "Tournament: " + tournament.getName() + " has been deleted";
         }
     }
-
 }

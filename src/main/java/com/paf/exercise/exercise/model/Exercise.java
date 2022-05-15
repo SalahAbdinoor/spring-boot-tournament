@@ -1,44 +1,36 @@
 package com.paf.exercise.exercise.model;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "exercise")
-public class Exercise {
+public class Exercise extends Audit {
 
     /* Variables */
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
     @OneToOne
-    @JoinColumn(name = "tournament_id")
+    //@JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
     @ManyToOne
-    @JoinColumn(name = "attending_players")
-    private Player attendingPlayers;
+    //@JoinColumn(name = "player_id")
+    private Player player;
+
+    public static void main(String[] args) {
+    }
 
     /* Constructors  */
-    public Exercise(Tournament tournament, Player attendingPlayers) {
+    public Exercise(Tournament tournament, Player player) {
+        super();
         this.tournament = tournament;
-        this.attendingPlayers = attendingPlayers;
+        this.player = player;
     }
 
     public Exercise() {
     }
 
     /* Getters & Setters */
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Tournament getTournament() {
         return tournament;
@@ -48,20 +40,20 @@ public class Exercise {
         this.tournament = tournament;
     }
 
-    public Player getAttendingPlayers() {
-        return attendingPlayers;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setAttendingPlayers(Player attendingPlayers) {
-        this.attendingPlayers = attendingPlayers;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     @Override
     public String toString() {
         return "Exercise{ " +
-                "id = " + id +
+                "id = " + getId() +
                 ", tournament = " + tournament +
-                ", attendingPlayers = " + attendingPlayers +
+                ", player = " + player +
                 '}';
     }
 }

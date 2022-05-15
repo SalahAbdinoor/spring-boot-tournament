@@ -1,26 +1,18 @@
 package com.paf.exercise.exercise.model;
 
-import org.springframework.data.jpa.repository.Temporal;
-
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name = "player")
-public class Player {
+public class Player extends Audit {
 
     /* Variables */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
-    @Column(name = "name", nullable = false)
+    //@Column(name = "name", nullable = false)
     private String name;
 
     /* Constructors */
     public Player(String name) {
-        //super();
+        super();
         this.name = name;
     }
 
@@ -36,18 +28,10 @@ public class Player {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public String toString() {
         return "Player{ " +
-                "id = " + id +
+                "id = " + getId() +
                 ", name = '" + name + '\'' +
                 " }";
     }

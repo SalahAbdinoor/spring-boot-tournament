@@ -1,11 +1,6 @@
 package com.paf.exercise.exercise;
 
-import com.paf.exercise.exercise.model.Exercise;
-import com.paf.exercise.exercise.model.Player;
-import com.paf.exercise.exercise.model.Tournament;
-import com.paf.exercise.exercise.repository.ExerciseRepository;
-import com.paf.exercise.exercise.repository.PlayerRepository;
-import com.paf.exercise.exercise.repository.TournamentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,93 +8,85 @@ import org.springframework.context.annotation.Bean;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @SpringBootApplication
 @RestController
 public class ExerciseApplication {
+
+    @Autowired
+    InterviewScenarios scenario;
 
     public static void main(String[] args) {
         SpringApplication.run(ExerciseApplication.class, args);
     }
 
     /**
-     * Setting up initial-conditions:
-     *
+     * Setting up scenario:
+     * <p>
      * There are 4 players partaking in 2 tournaments (high reward & mid reward)
+     * <p>
+     * --> the player 1 & 3 change tournament swap tournament
+     * --> changing price name/reward on low reward -> ultra reward / 10000
+     * --> delete player 1 and place new player in the tournament against player 4
+     * --> change name of tournament
      *
-     *
-     * @param exerciseRepository
-     * @param playerRepository
-     * @param tournamentRepository
-     * @return
+     * @return - prints scenario in console
      */
     @Bean
-    public CommandLineRunner initialSetup(ExerciseRepository exerciseRepository, PlayerRepository playerRepository, TournamentRepository tournamentRepository) {
+    public CommandLineRunner initialSetup() {
 
         return args -> {
 
-            String highTournamentName = "high reward";
-            String midTournamentName = "mid reward";
-            String lowTournamentName = "low reward";
+            System.out.println("\n---------------------------------------------------------------------");
+            System.out.println("----------------------- Interview exercise --------------------------");
+            System.out.println("---------------------------------------------------------------------");
 
-            /* Setting up players */
-            Player player1 = playerRepository.save(new Player("Ärtan"));
-            Player player2 = playerRepository.save(new Player("Pärtan"));
+            System.out.println("\n--> initializing players, tournaments & exercises \n");
 
-            Player player3 = playerRepository.save(new Player("Piron"));
-            Player player4 = playerRepository.save(new Player("Paron"));
+            // init players, tournaments & exercises
+            System.out.println(scenario.initPlayers());
+            System.out.println(scenario.initTournaments());
+            System.out.println(scenario.initExercises());
 
-            /* Setting up tournaments*/
-            Tournament highReward = tournamentRepository.save(new Tournament(highTournamentName,5000, "EUR"));
-            Tournament midReward = tournamentRepository.save(new Tournament(midTournamentName, 2500, "EUR"));
-            Tournament lowReward = tournamentRepository.save(new Tournament(lowTournamentName, 1000, "SEK"));
+            System.out.println("\nCurrent state: \n" + scenario.currentState());
 
-            /* Setting up exercises*/
-            Exercise player1Exercise = exerciseRepository.save(new Exercise(highReward, player1));
-            Exercise player2Exercise = exerciseRepository.save(new Exercise(highReward, player2));
+            System.out.println("\n--> Scenario 1: Change tournament spots of Ärtan and Piron \n");
+            System.out.println(scenario.firstScenario());
 
-            Exercise player3Exercise = exerciseRepository.save(new Exercise(midReward, player3));
-            Exercise player4Exercise = exerciseRepository.save(new Exercise(midReward, player4));
+            //System.out.println('\n' + scenario.currentState());
+
+            System.out.println("\n--> Scenario 2: Change \n");
+            System.out.println(scenario.secondScenario());
+
+//            System.out.println('\n' + scenario.currentState());
+
+            System.out.println("\n--> Scenario 3: Change \n");
+            System.out.println(scenario.thirdScenario());
 
 
-            System.out.println("\n------------------- Players -----------------");
-            System.out.println("Player 1: " + player1);
-            System.out.println("Player 2: " + player2);
-            System.out.println("PLayer 3: " + player3);
-            System.out.println("PLayer 4: " + player4 + "\n");
 
-            System.out.println("----------------- Tournaments -------------------");
-            System.out.println("High reward: " + highReward);
-            System.out.println("Mid reward: " + midReward);
-            System.out.println("Low reward: " + lowReward + "\n");
+//            System.out.println('\n' + scenario.currentState());
+/*
 
-            System.out.println("----------------- Exercises -------------------");
-            System.out.println("Player 1 exercise: " + player1Exercise);
-            System.out.println("Player 2 exercise: " + player2Exercise);
-            System.out.println("Player 3 exercise: " + player3Exercise);
-            System.out.println("Player 4 exercise: " + player4Exercise);
-
-            /* ------------------------------------------------------------------------------- */
             System.out.println("\n--------------- TEST CASES ---------------------\n");
 
             Tournament midTournament = tournamentRepository.findByName(midTournamentName).get();
             Tournament highTournament = tournamentRepository.findByName(highTournamentName).get();
 
-            List<Exercise> playersInMidReward = exerciseRepository.findByTournament(midTournament);
-            List<Exercise> playersInHighReward = exerciseRepository.findByTournament(highTournament);
+            List<Exercise> midTournamentExcercise = exerciseRepository.findByTournament(midTournament);
+            List<Exercise> highTournamentExcercise = exerciseRepository.findByTournament(highTournament);
 
             System.out.println("--------------- Mid-reward players ---------------------");
-            playersInMidReward.forEach((exercise) -> {
+            midTournamentExcercise.forEach((exercise) -> {
                 System.out.println("Player in mid-reward tournament: " + exercise.getAttendingPlayers().getName());
 
             });
 
             System.out.println("\n--------------- High-reward players ---------------------");
-            playersInHighReward.forEach((player) -> {
+            highTournamentExcercise.forEach((player) -> {
                 System.out.println("Player in high-reward tournament: " + player.getAttendingPlayers().getName());
             });
 
+ */
         };
     }
 }

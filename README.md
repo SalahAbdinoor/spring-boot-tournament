@@ -92,3 +92,34 @@ If you use Windows:
   - Head to [http://localhost:8080](http://localhost:8080/) to see the frontend.
 
 NOTE: You will need Java 11 (or newer) set up and in use for this to work.
+
+-- TODO:
+
+PRIO: DATABAS - GÖR SÅ DU KAN DELETA
+1. Sätt upp API (POSTMAN) för Exercise. X
+2. Fixa controller till Exercise. X
+3. lägg till saveModel/partialUpdateModel (put/patch) i alla controllers - https://www.baeldung.com/http-put-patch-difference-spring
+4. create service-classes for models. Current held in controllers "business logic".
+5. Bygg på mina scenarion
+6. namnge scenariona korrekt
+7. Skapa en README.md - Ge POSTMAN-instruktioner, scopet, reflektioner, instruktioner till att köra programmet, m.m.  
+8. Testa API med postman - Run PAF. X
+9. Lägg till ResponseEntity<Model"> - se länk i 2. (LOW)
+10. kolla om id kan tas in som en Long från pathVariable - se länk i 2. X
+11. kolla skillnaden i databasen då du använder cascade.merge vs cascade.all
+12. attending players låter fel. X
+13. gå igenom kommentarer i alla filer
+14. skapa unit/integrations-tester
+
+Affärslogik service klassen: 
+
+1. hämta ut spelare som tillhör en viss tunering samt presentera i postman. - Se bort kommenterad kod i CommandRunner. 
+2. Ta bort spelare som tillhör en viss turnering X - görs i modellens @DeleteMapping
+3. kasta errors som t.ex deletion failed
+4. current state för att visa vilka matcher som pågår både turneringarna samt deltagarna.
+
+JUST NU: Databas relations krasch shits
+
+
+Reflektion: 
+- Berätta om hur du valde att ta dig runt cascade med att deleta ur tabellerna direkt (fulhack)

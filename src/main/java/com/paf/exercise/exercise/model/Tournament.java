@@ -4,46 +4,43 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "tournament")
-public class Tournament {
+public class Tournament extends Audit {
+
+    // allowed currencies as rewards
+    private enum currencies {EUR,}
 
     /* Variables */
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
-    @Column(name = "name", nullable = false)
+    //@Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "reward_amount", nullable = false)
+    //@Column(name = "reward_amount", nullable = false)
     private double rewardAmount;
 
-    @Column(name = "currency", nullable = false)
+    //@Column(name = "currency", nullable = false)
     private String currency;
 
-    public Tournament(String name, double rewardAmount, String currency) {
+    /* Constructors */
+
+    public Tournament(String name, double rewardAmount, String currency) throws IllegalArgumentException {
+        super();
         this.name = name;
         this.rewardAmount = rewardAmount;
-        this.currency = currency;
+        this.currency = checkCurrencies(currency);
+
     }
-
-    // Currently, allowed currencies as rewards
-    public enum currencies { EUR, }
-
-    /* Constructors */
 
     public Tournament() {
     }
 
     /* Getters & Setters */
 
-    public Long getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getRewardAmount() {
@@ -54,20 +51,52 @@ public class Tournament {
         this.rewardAmount = rewardAmount;
     }
 
-    public String getName() {
-        return name;
+    public String getCurrency() {
+        return currency;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Sets currency
+     *
+     * Checks if currency is inside enum - currencies
+     *
+     * @param currency
+     * @throws IllegalArgumentException
+     */
+    public void setCurrency(String currency) throws IllegalArgumentException {
+        this.currency = checkCurrencies(currency);
     }
 
     @Override
     public String toString() {
         return "Tournament{ " +
-                "id = " + id +
+                "id = " + getId() +
                 ", name = '" + name + '\'' +
                 ", rewardAmount = " + rewardAmount +
+                ", currency = '" + currency + '\'' +
                 " }";
+    }
+
+    /* Validation */
+
+    /**
+     * This helper-method checks to see if input-currency is allowed
+     * in reference to "currencies" enum
+     *
+     * @param currency - Input currency from user
+     * @return - if currency is allowed ? return currency : throw exception
+     */
+    private String checkCurrencies(String currency) throws IllegalArgumentException {
+
+        // For each currency in enum
+        for (currencies allowedCurrencies : currencies.values()) {
+            // If currency matches input-currency
+            if (allowedCurrencies.name().equals(currency)) {
+                return currency;
+            }
+        }
+
+        // If input-currency wasn't found in enum
+        throw new IllegalArgumentException("Currency is not allowed, please try again!");
     }
 }
