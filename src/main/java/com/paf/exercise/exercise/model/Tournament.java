@@ -1,5 +1,7 @@
 package com.paf.exercise.exercise.model;
 
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,13 +13,13 @@ public class Tournament extends Audit {
 
     /* Variables */
 
-    //@Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    //@Column(name = "reward_amount", nullable = false)
+    @Column(name = "reward_amount", nullable = false)
     private double rewardAmount;
 
-    //@Column(name = "currency", nullable = false)
+    @Column(name = "currency", nullable = false)
     private String currency;
 
     /* Constructors */
@@ -56,9 +58,7 @@ public class Tournament extends Audit {
     }
 
     /**
-     * Sets currency
-     *
-     * Checks if currency is inside enum - currencies
+     * Sets currency if currency is inside enum - currencies
      *
      * @param currency
      * @throws IllegalArgumentException
@@ -81,10 +81,10 @@ public class Tournament extends Audit {
 
     /**
      * This helper-method checks to see if input-currency is allowed
-     * in reference to "currencies" enum
+     * in reference to "currencies" enum.
      *
-     * @param currency - Input currency from user
-     * @return - if currency is allowed ? return currency : throw exception
+     * @param currency input currency from user
+     * @return if currency is allowed ? return currency : throw exception
      */
     private String checkCurrencies(String currency) throws IllegalArgumentException {
 

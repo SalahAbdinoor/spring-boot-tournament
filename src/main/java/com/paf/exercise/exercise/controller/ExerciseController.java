@@ -7,9 +7,12 @@ import com.paf.exercise.exercise.repository.ExerciseRepository;
 import com.paf.exercise.exercise.repository.PlayerRepository;
 import com.paf.exercise.exercise.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequestMapping(path = "/api/v2/exercise")
 public class ExerciseController {
 
@@ -23,9 +26,10 @@ public class ExerciseController {
     /**
      * @return list of exercises
      */
-    @GetMapping(path = "/all")
+    @GetMapping(path = "/")
     public @ResponseBody
     Iterable<Exercise> getExercises() {
+
         return exerciseRepository.findAll();
     }
 
@@ -33,16 +37,16 @@ public class ExerciseController {
      * Get exercise by ID.
      *
      * @param id ID of exercise
-     * @return Success || Error
+     * @return ResponseEntity -> Success || Error
      */
     @GetMapping(path = "/get/{id}")
     public @ResponseBody
-    String getExercise(@PathVariable Long id) {
+    ResponseEntity<String> getExercise(@PathVariable Long id) {
 
         if (!exerciseRepository.existsById(id))
-            return "There is no exercise with ID: " + id;
+            return new ResponseEntity<>("There is no exercise with ID: " + id, HttpStatus.NOT_FOUND);
         else
-            return exerciseRepository.findById(id).get().toString();
+            return new ResponseEntity<>(exerciseRepository.findById(id).get().toString(), HttpStatus.OK);
     }
 
     /**
@@ -50,17 +54,17 @@ public class ExerciseController {
      *
      * @param playerId     ID of player that's attending the exercise
      * @param tournamentId ID of tournament that's being exercised
-     * @return Success || Error
+     * @return ResponseEntity -> Success || Error
      */
     @PostMapping(path = "/add")
     public @ResponseBody
-    String addExercise(@RequestParam Long playerId, @RequestParam Long tournamentId) {
+    ResponseEntity<String> addExercise(@RequestParam Long playerId, @RequestParam Long tournamentId) {
 
         if (!tournamentRepository.existsById(tournamentId)) {
-            return "Tournament doesn't exist";
+            return new ResponseEntity<>("Tournament doesn't exist", HttpStatus.NOT_FOUND);
 
         } else if (!playerRepository.existsById(playerId)) {
-            return "Player doesn't exist";
+            return new ResponseEntity<>("Player doesn't exist", HttpStatus.NOT_FOUND);
 
             // TODO: add else if("SELECT * FROM EXERCISE WHERE PLAYER_ID=playerId && Tournament_ID=tournamentId")
             //  return "Player is already connected to this tournament!"
@@ -72,7 +76,7 @@ public class ExerciseController {
             Exercise exercise = new Exercise(tournament, player);
             exerciseRepository.save(exercise);
 
-            return "New exercise has been added: \n" + exercise;
+            return new ResponseEntity<>("New exercise has been added: \n" + exercise, HttpStatus.CREATED);
         }
     }
 
@@ -82,16 +86,16 @@ public class ExerciseController {
      * @param id              ID of exercise getting updated
      * @param newPlayerId     ID of new player wanting to attend the exercise
      * @param newTournamentId ID of new tournament that's getting exercised
-     * @return Success || Error
+     * @return ResponseEntity -> Success || Error
      */
     @PutMapping(path = "/put/{id}")
     public @ResponseBody
-    String putExercise(@PathVariable Long id,
-                       @RequestParam Long newPlayerId,
-                       @RequestParam Long newTournamentId) {
+    ResponseEntity<String> putExercise(@PathVariable Long id,
+                                       @RequestParam Long newPlayerId,
+                                       @RequestParam Long newTournamentId) {
 
         if (!exerciseRepository.existsById(id))
-            return "There is no exercise with ID: " + id;
+            return new ResponseEntity<>("There is no exercise with ID: " + id, HttpStatus.NOT_FOUND);
 
         else {
 
@@ -112,7 +116,7 @@ public class ExerciseController {
 
             // if both new player & tournament are the same
             if (isNewPlayerSameAsOldPlayer && isNewTournamentSameAsOldTournament)
-                return "Player is already connected to this tournament!";
+                return new ResponseEntity<>("Player is already connected to this tournament!", HttpStatus.FORBIDDEN);
 
             else {
                 // set new player & tournament
@@ -123,8 +127,8 @@ public class ExerciseController {
                 exerciseRepository.save(exercise);
 
                 // Successful change
-                return "Exercise parameters changed: \n" + oldPlayer.getName() + " -> " + newPlayer.getName()
-                        + "\n" + oldTournament.getName() + " -> " + newTournament.getName();
+                return new ResponseEntity<>("Exercise parameters changed: \n" + oldPlayer.getName() + " -> " + newPlayer.getName()
+                        + "\n" + oldTournament.getName() + " -> " + newTournament.getName(), HttpStatus.OK);
             }
         }
     }
@@ -134,20 +138,20 @@ public class ExerciseController {
      * Deletes exercise based on ID.
      *
      * @param id ID of exercise that is getting deleted
-     * @return Success || Error
+     * @return ResponseEntity -> Success || Error
      */
     @DeleteMapping(path = "/delete/{id}")
     public @ResponseBody
-    String deleteExercise(@PathVariable Long id) {
+    ResponseEntity<String> deleteExercise(@PathVariable Long id) {
 
         if (!exerciseRepository.existsById(id))
-            return "There is no exercise with ID: " + id;
+            return new ResponseEntity<>("There is no exercise with ID: " + id, HttpStatus.NOT_FOUND);
 
         else {
             Exercise exercise = exerciseRepository.findById(id).get();
             exerciseRepository.delete(exercise);
 
-            return exercise + "\nhas been deleted";
+            return new ResponseEntity<>(exercise + "\nhas been deleted", HttpStatus.OK);
         }
     }
 }

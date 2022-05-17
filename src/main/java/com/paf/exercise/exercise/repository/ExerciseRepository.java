@@ -3,14 +3,17 @@ package com.paf.exercise.exercise.repository;
 import com.paf.exercise.exercise.model.Exercise;
 import com.paf.exercise.exercise.model.Player;
 import com.paf.exercise.exercise.model.Tournament;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
-public interface ExerciseRepository extends CrudRepository<Exercise, Long> {
+@Repository
+public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     @Override
-    Iterable<Exercise> findAll();
+    List<Exercise> findAll();
 
     @Override
     Optional<Exercise> findById(Long aLong);

@@ -1,7 +1,6 @@
 package com.paf.exercise.exercise.model;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "exercise")
@@ -10,15 +9,12 @@ public class Exercise extends Audit {
     /* Variables */
 
     @OneToOne
-    //@JoinColumn(name = "tournament_id")
+    @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
     @ManyToOne
-    //@JoinColumn(name = "player_id")
+    @JoinColumn(name = "player_id")
     private Player player;
-
-    public static void main(String[] args) {
-    }
 
     /* Constructors  */
     public Exercise(Tournament tournament, Player player) {

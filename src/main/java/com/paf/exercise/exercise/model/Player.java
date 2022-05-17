@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Player extends Audit {
 
     /* Variables */
-    //@Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     /* Constructors */

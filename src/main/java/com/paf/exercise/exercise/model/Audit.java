@@ -15,24 +15,29 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public abstract class Audit {
 
+    /* Variables */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    //@Column(name = "id")
+    @Column(name = "id")
     private Long id;
 
-    //@Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    //@Column(name = "updated_at")
+    @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    /* super-constructor */
 
     public Audit() {
         this.id = getId();
         this.createdAt = getCreatedAt();
         this.updatedAt = getUpdatedAt();
     }
+
+    /* Getters */
 
     public Long getId() {
         return id;

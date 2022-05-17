@@ -4,9 +4,13 @@ import com.paf.exercise.exercise.model.Tournament;
 import com.paf.exercise.exercise.repository.ExerciseRepository;
 import com.paf.exercise.exercise.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@RestController
+@Controller
 @RequestMapping(path = "/api/v2/tournament")
 public class TournamentController {
 
@@ -19,7 +23,7 @@ public class TournamentController {
     /**
      * @return list of tournament
      */
-    @GetMapping(path = "/all")
+    @GetMapping(path = "/")
     public @ResponseBody
     Iterable<Tournament> getTournaments() {
         return tournamentRepository.findAll();
@@ -29,16 +33,16 @@ public class TournamentController {
      * Get tournament by ID.
      *
      * @param id ID of tournament
-     * @return Success || Error
+     * @return ResponseEntity -> Success || Error
      */
     @GetMapping(path = "/get/{id}")
     public @ResponseBody
-    String getTournament(@PathVariable Long id) {
+    ResponseEntity<String> getTournament(@PathVariable Long id) {
 
         if (!tournamentRepository.existsById(id))
-            return "There is no tournament with ID: " + id;
+            return new ResponseEntity<>("There is no tournament with ID: " + id, HttpStatus.NOT_FOUND);
         else
-            return tournamentRepository.findById(id).get().toString();
+            return new ResponseEntity<>(tournamentRepository.findById(id).get().toString(), HttpStatus.OK);
     }
 
     /**
@@ -47,40 +51,39 @@ public class TournamentController {
      * @param name         Name of tournament
      * @param rewardAmount Reward amount
      * @param currency     Currency of reward-amount
-     * @return Success || Error
+     * @return ResponseEntity -> Success || Error
      */
     @PostMapping(path = "/add")
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public @ResponseBody
-    String addTournament(@RequestParam String name,
-                         @RequestParam double rewardAmount,
-                         @RequestParam String currency) {
+    ResponseEntity<String> addTournament(@RequestParam String name,
+                                         @RequestParam Double rewardAmount,
+                                         @RequestParam String currency) throws NumberFormatException {
 
         try {
             // If tournament already exist
             if (tournamentRepository.existsByName(name))
-                return "Tournament name is already in use;\nPlease try another name!";
+                return new ResponseEntity<>("Tournament name is already in use;\nPlease try another name!", HttpStatus.FORBIDDEN);
 
                 // If parameters don't meet conditions
             else if (name.length() < 4 || rewardAmount < 0 || currency.length() != 3)
-                return "Name needs to be more than characters" +
+                return new ResponseEntity<>("Name needs to be more than characters" +
                         "\nReward-amount needs to be more than 0" +
-                        "\nCurrency needs to be 3 characters";
+                        "\nCurrency needs to be 3 characters", HttpStatus.LENGTH_REQUIRED);
 
                 // Successful creation of new player
             else {
                 Tournament tournament = new Tournament(name, rewardAmount, currency);
                 tournamentRepository.save(tournament);
 
-                return "New tournament added: " + tournament;
+                return new ResponseEntity<>("New tournament added: " + tournament, HttpStatus.CREATED);
             }
-
             // If currency doesn't exist in currencies - enum - @Tournament.java
         } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (IllegalStateException e) {
             e.printStackTrace();
-            return e.getMessage();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "something went horribly wrong!";
+            return new ResponseEntity<>("Reward amount must be a number!", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -91,22 +94,22 @@ public class TournamentController {
      * @param newName         New name of tournament
      * @param newRewardAmount New amount for reward
      * @param newCurrency     New currency of reward-amount
-     * @return Success || Error
+     * @return ResponseEntity -> Success || Error
      */
     @PutMapping(path = "/put/{id}")
     public @ResponseBody
-    String updateTournament(@PathVariable Long id,
-                            @RequestParam String newName,
-                            @RequestParam double newRewardAmount,
-                            @RequestParam String newCurrency) {
+    ResponseEntity<String> updateTournament(@PathVariable Long id,
+                                            @RequestParam String newName,
+                                            @RequestParam double newRewardAmount,
+                                            @RequestParam String newCurrency) {
         try {
             // If ID doesn't exist
             if (!tournamentRepository.existsById(id)) {
-                return "There is no tournament with ID: " + id;
+                return new ResponseEntity<>("There is no tournament with ID: " + id, HttpStatus.NOT_FOUND);
 
                 // If tournament-name is taken
             } else if (tournamentRepository.existsByName(newName)) {
-                return "Tournament name is already in use;\nPlease try another name!";
+                return new ResponseEntity<>("name is already in use;\nPlease try another name!", HttpStatus.FORBIDDEN);
 
             } else {
                 // Get tournament
@@ -123,16 +126,14 @@ public class TournamentController {
                 tournamentRepository.save(tournament);
 
                 // Successful change
-                return "Tournament parameters changed: \n" + oldName + " -> " + newName
+
+                return new ResponseEntity<>("Tournament parameters changed: \n" + oldName + " -> " + newName
                         + "\n" + oldRewardAmount + " -> " + newRewardAmount
-                        + "\n" + oldCurrency + " -> " + newCurrency;
+                        + "\n" + oldCurrency + " -> " + newCurrency, HttpStatus.OK);
             }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            return e.getMessage();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "something went horribly wrong!";
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -140,14 +141,14 @@ public class TournamentController {
      * Deletes tournament based on ID.
      *
      * @param id ID of tournament that is getting deleted
-     * @return Success || Error
+     * @return ResponseEntity -> Success || Error
      */
     @DeleteMapping(path = "/delete/{id}")
     public @ResponseBody
-    String deleteTournament(@PathVariable Long id) {
+    ResponseEntity<String> deleteTournament(@PathVariable Long id) {
 
         if (!tournamentRepository.existsById(id))
-            return "There is no tournament with ID: " + id;
+            return new ResponseEntity<>("There is no tournament with ID: " + id, HttpStatus.NOT_FOUND);
 
         else {
             Tournament tournament = tournamentRepository.findById(id).get();
@@ -160,7 +161,7 @@ public class TournamentController {
 
             tournamentRepository.delete(tournament);
 
-            return "Tournament: " + tournament.getName() + " has been deleted";
+            return new ResponseEntity<>("Tournament: " + tournament.getName() + " has been deleted", HttpStatus.OK);
         }
     }
 }
