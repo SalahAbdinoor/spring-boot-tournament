@@ -1,6 +1,6 @@
 package com.paf.exercise.exercise.model;
 
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import com.paf.exercise.exercise.model.abstracts.Audit;
 
 import javax.persistence.*;
 

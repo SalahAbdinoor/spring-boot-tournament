@@ -3,6 +3,7 @@ package com.paf.exercise.exercise.controller;
 import com.paf.exercise.exercise.model.Player;
 import com.paf.exercise.exercise.repository.ExerciseRepository;
 import com.paf.exercise.exercise.repository.PlayerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

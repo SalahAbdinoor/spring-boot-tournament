@@ -1,5 +1,7 @@
 package com.paf.exercise.exercise.model;
 
+import com.paf.exercise.exercise.model.abstracts.Audit;
+
 import javax.persistence.*;
 
 @Entity

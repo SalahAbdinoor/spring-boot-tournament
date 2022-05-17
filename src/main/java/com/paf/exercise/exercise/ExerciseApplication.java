@@ -12,8 +12,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +53,9 @@ public class ExerciseApplication {
 
             System.out.println("\n--> current match-ups\n");
 
-            printCurrentExercise();
+            printCurrentExercises();
+
+            System.err.println("\nRead: SOLUTION.MD for instructions");
         };
     }
 
@@ -142,11 +142,9 @@ public class ExerciseApplication {
     }
 
     /**
-     * find tournaments with similar ID and print players for that tournament
-     *
-     * @return prints X
+     * prints current exercise
      */
-    private void printCurrentExercise() {
+    private void printCurrentExercises() {
 
         // Print each exercise
         for (Exercise exercise : exerciseRepository.findAll()) {

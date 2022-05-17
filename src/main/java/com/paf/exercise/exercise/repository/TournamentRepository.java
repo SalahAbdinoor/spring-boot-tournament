@@ -13,8 +13,6 @@ public interface TournamentRepository extends CrudRepository<Tournament, Long> {
     @Override
     Optional<Tournament> findById(Long aLong);
 
-    List<Tournament> findByRewardAmount(double rewardAmount);
-
     Optional<Tournament> findByName(String name);
 
     boolean existsByName(String name);

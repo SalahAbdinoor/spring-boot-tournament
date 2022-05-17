@@ -1,5 +1,7 @@
 package com.paf.exercise.exercise.model;
 
+import com.paf.exercise.exercise.model.abstracts.Audit;
+
 import javax.persistence.*;
 
 @Entity
@@ -48,8 +50,8 @@ public class Exercise extends Audit {
     public String toString() {
         return "Exercise{ " +
                 "id = " + getId() +
-                ", tournament = " + tournament +
-                ", player = " + player +
+                ", tournament = " + tournament.getName() +
+                ", player = " + player.getName() +
                 '}';
     }
 }
